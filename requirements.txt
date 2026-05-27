@@ -4,3 +4,4 @@ llama-index-llms-ollama
 mcp
 fastmcp
 nest-asyncio
+gunicorn
