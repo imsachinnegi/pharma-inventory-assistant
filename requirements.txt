@@ -1,0 +1,7 @@
+flask
+llama-index
+llama-index-llms-ollama
+mcp
+fastmcp
+nest-asyncio
+sqlite3

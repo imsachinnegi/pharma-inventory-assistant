@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>InventoryInsight Assistant</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .chat-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        #chat-box {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+            background: #fafafa;
+            border-radius: 5px;
+        }
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .user-message {
+            background: #007bff;
+            color: white;
+            text-align: right;
+        }
+        .bot-message {
+            background: #e9ecef;
+            color: #333;
+        }
+        #input-container {
+            display: flex;
+            gap: 10px;
+        }
+        #user-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        #send-btn {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        #send-btn:hover {
+            background: #0056b3;
+        }
+        .commands {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+        .commands h3 {
+            margin-top: 0;
+        }
+        .commands ul {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <h1>💊 Pharma Inventory Assistant</h1>
+        
+        <div id="chat-box"></div>
+        
+        <div id="input-container">
+            <input 
+                type="text" 
+                id="user-input" 
+                placeholder="Type your message here..."
+                onkeypress="if(event.key==='Enter') sendMessage()"
+            />
+            <button id="send-btn" onclick="sendMessage()">Send</button>
+        </div>
+
+        <div class="commands">
+            <h3>📋 Available Commands:</h3>
+            <ul>
+                <li><strong>show inventory</strong> - View all medicines</li>
+                <li><strong>low stock</strong> - Show medicines with quantity < 10</li>
+                <li><strong>expiring soon</strong> - Show medicines expiring in 30 days</li>
+                <li><strong>search [medicine name]</strong> - Search for a medicine</li>
+                <li><strong>add medicine</strong> - Add new medicine (provide details)</li>
+                <li><strong>sell [quantity] [medicine]</strong> - Reduce stock</li>
+                <li><strong>delete [medicine name]</strong> - Delete a medicine</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function addMessage(message, isUser) {
+            const chatBox = document.getElementById('chat-box');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message ' + (isUser ? 'user-message' : 'bot-message');
+            messageDiv.textContent = message;
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('user-input');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            addMessage(message, true);
+            input.value = '';
+            
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+                
+                const data = await response.json();
+                addMessage(data.response, false);
+            } catch (error) {
+                addMessage('Error: Could not connect to server', false);
+            }
+        }
+
+        // Welcome message
+        window.onload = function() {
+            addMessage('Welcome! I am your Pharma Inventory Assistant. How can I help you today?', false);
+        };
+    </script>
+</body>
+</html>
